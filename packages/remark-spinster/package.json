@@ -1,0 +1,22 @@
+{
+  "name": "remark-spinster",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magicink/spinster.git"
+  },
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "hast-util-from-dom": "^5.0.1",
+    "hastscript": "^9.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
+  }
+}

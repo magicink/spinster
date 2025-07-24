@@ -3,7 +3,8 @@
   "private": true,
   "module": "index.ts",
   "workspaces": [
-    "apps/content"
+    "apps/content",
+    "packages/*"
   ],
   "scripts": {
     "prepare": "husky || true"
