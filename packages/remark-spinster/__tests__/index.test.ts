@@ -22,4 +22,13 @@ describe("remarkSpinster", () => {
     const result = await processor.process("hello world");
     expect(result.toString()).toBe("hello world\n");
   });
+
+  it("capitalizes multiple 'spinster' occurrences", async () => {
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkSpinster)
+      .use(remarkStringify);
+    const result = await processor.process("spinster spinster spinster");
+    expect(result.toString()).toBe("Spinster Spinster Spinster\n");
+  });
 });
