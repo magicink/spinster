@@ -7,8 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "typecheck": "tsc --noEmit"
   },
+  "prettier": "@brandontom/prettier",
   "dependencies": {
     "turbo": "^2.5.5"
   },
