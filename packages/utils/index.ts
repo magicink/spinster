@@ -2,7 +2,10 @@ import { useGameStore } from './store'
 import { visit } from 'unist-util-visit'
 
 // Initialize a passive subscription so the store is created
-useGameStore.subscribe(() => {})
+useGameStore.subscribe(
+  state => state.gameData,
+  () => {}
+)
 
 interface TextNode {
   type: 'text'
