@@ -1,3 +1,4 @@
+import { useGameStore } from './store'
 import { visit } from 'unist-util-visit'
 
 interface TextNode {
@@ -75,8 +76,6 @@ export default function remarkSpinster() {
     })
   }
 }
-
-import { useGameStore } from './store'
 
 // Initialize a passive subscription so the store is created
 useGameStore.subscribe(() => {})
