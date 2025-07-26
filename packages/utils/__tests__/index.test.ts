@@ -31,4 +31,30 @@ describe("remarkSpinster", () => {
     expect(tree.children[0].value).toBe("Hello");
     delete (globalThis as any).scriptExecuted;
   });
+
+  it("handles multiple script tags without skipping", () => {
+    (globalThis as any).s1 = false;
+    (globalThis as any).s2 = false;
+    const tree: any = {
+      type: "root",
+      children: [
+        {
+          type: "p",
+          value: "<script>globalThis.s1 = true;</script>Hello",
+        },
+        {
+          type: "p",
+          value: "<script>globalThis.s2 = true;</script>World",
+        },
+      ],
+    };
+    const transformer = remarkSpinster();
+    transformer(tree);
+    expect((globalThis as any).s1).toBe(true);
+    expect((globalThis as any).s2).toBe(true);
+    expect(tree.children[0].value).toBe("Hello");
+    expect(tree.children[1].value).toBe("World");
+    delete (globalThis as any).s1;
+    delete (globalThis as any).s2;
+  });
 });
