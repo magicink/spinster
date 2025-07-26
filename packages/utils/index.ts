@@ -76,4 +76,9 @@ export default function remarkSpinster() {
   }
 }
 
-export { useGameStore } from './store'
+import { useGameStore } from './store'
+
+// Initialize a passive subscription so the store is created
+useGameStore.subscribe(() => {})
+
+export { useGameStore }
