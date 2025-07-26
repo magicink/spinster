@@ -1,5 +1,6 @@
 import { produce } from 'immer'
 import { create } from 'zustand'
+import { subscribeWithSelector } from 'zustand/middleware'
 
 export interface GameState<T = Record<string, unknown>> {
   /** Arbitrary game state */
@@ -17,8 +18,8 @@ interface InternalState<T> extends GameState<T> {
   _initialGameData: T
 }
 
-export const useGameStore = create<InternalState<Record<string, unknown>>>(
-  set => ({
+export const useGameStore = create(
+  subscribeWithSelector<InternalState<Record<string, unknown>>>(set => ({
     gameData: {},
     _initialGameData: {},
     init: data =>
@@ -36,5 +37,5 @@ export const useGameStore = create<InternalState<Record<string, unknown>>>(
       set(state => ({
         gameData: { ...state._initialGameData }
       }))
-  })
+  }))
 )
