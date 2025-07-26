@@ -31,7 +31,8 @@ export default function remarkSpinster() {
       }
     });
 
-    for (const { parent, index } of toRemove.slice().reverse()) {
+    // Reverse the array to maintain correct indices when removing elements
+    for (const { parent, index } of getReversedCopy(toRemove)) {
       parent.children.splice(index, 1);
     }
   };
