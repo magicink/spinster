@@ -1,6 +1,9 @@
 import { useGameStore } from './store'
 import { visit } from 'unist-util-visit'
 
+// Initialize a passive subscription so the store is created
+useGameStore.subscribe(() => {})
+
 interface TextNode {
   type: 'text'
   value: string
@@ -15,8 +18,8 @@ interface LinkNode {
 type ReplacementNode = TextNode | LinkNode
 
 export default function remarkSpinster() {
-  // Matches Harlowe style links [[...]]
-  const linkRegex = /\[\[([^\]]+?)\]\]/g
+  // Matches Harlowe-style links [[...]]
+  const linkRegex = /\[\[([^\]]+?)]]/g
 
   function parseLink(raw: string): { text: string; target: string } {
     const right = raw.indexOf('->')
@@ -76,8 +79,5 @@ export default function remarkSpinster() {
     })
   }
 }
-
-// Initialize a passive subscription so the store is created
-useGameStore.subscribe(() => {})
 
 export { useGameStore }
