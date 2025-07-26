@@ -17,7 +17,7 @@ interface LinkNode {
 
 type ReplacementNode = TextNode | LinkNode
 
-export default function remarkSpinster() {
+export default function transformAst() {
   // Matches Harlowe-style links [[...]]
   const linkRegex = /\[\[([^\]]+?)]]/g
 
