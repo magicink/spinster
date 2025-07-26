@@ -1,22 +1,33 @@
 import { describe, it, expect, beforeEach } from 'bun:test'
-import { useCounterStore } from '../store'
+import { useGameStore } from '../store'
 
 // Reset store state before each test
 beforeEach(() => {
-  useCounterStore.setState({ count: 0 })
+  useGameStore.setState({ scene: '', score: 0, inventory: [] })
 })
 
-describe('useCounterStore', () => {
-  it('increments and resets the counter', () => {
-    expect(useCounterStore.getState().count).toBe(0)
-    useCounterStore.getState().increment()
-    expect(useCounterStore.getState().count).toBe(1)
-    useCounterStore.getState().decrement()
-    expect(useCounterStore.getState().count).toBe(0)
-    useCounterStore.getState().increment()
-    useCounterStore.getState().increment()
-    expect(useCounterStore.getState().count).toBe(2)
-    useCounterStore.getState().reset()
-    expect(useCounterStore.getState().count).toBe(0)
+describe('useGameStore', () => {
+  it('handles scene, inventory and score updates', () => {
+    expect(useGameStore.getState().scene).toBe('')
+    expect(useGameStore.getState().score).toBe(0)
+    expect(useGameStore.getState().inventory).toHaveLength(0)
+
+    useGameStore.getState().setScene('intro')
+    expect(useGameStore.getState().scene).toBe('intro')
+
+    useGameStore.getState().incrementScore()
+    useGameStore.getState().incrementScore(4)
+    expect(useGameStore.getState().score).toBe(5)
+
+    useGameStore.getState().addItem('key')
+    expect(useGameStore.getState().inventory).toContain('key')
+
+    useGameStore.getState().removeItem('key')
+    expect(useGameStore.getState().inventory).toHaveLength(0)
+
+    useGameStore.getState().reset()
+    expect(useGameStore.getState().scene).toBe('')
+    expect(useGameStore.getState().score).toBe(0)
+    expect(useGameStore.getState().inventory).toHaveLength(0)
   })
 })

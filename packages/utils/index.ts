@@ -76,4 +76,4 @@ export default function remarkSpinster() {
   }
 }
 
-export { useCounterStore } from './store'
+export { useGameStore } from './store'
