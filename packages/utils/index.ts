@@ -1,10 +1,23 @@
 import { visit } from 'unist-util-visit'
 
+interface TextNode {
+  type: 'text'
+  value: string
+}
+
+interface LinkNode {
+  type: 'link'
+  url: string
+  children: TextNode[]
+}
+
+type ReplacementNode = TextNode | LinkNode
+
 export default function remarkSpinster() {
   // Matches Harlowe style links [[...]]
   const linkRegex = /\[\[([^\]]+?)\]\]/g
 
-  function parseLink(raw: string) {
+  function parseLink(raw: string): { text: string; target: string } {
     const right = raw.indexOf('->')
     const left = raw.indexOf('<-')
     if (right !== -1) {
@@ -35,7 +48,7 @@ export default function remarkSpinster() {
       const value: string = node.value
       let match
       linkRegex.lastIndex = 0
-      const replacements: any[] = []
+      const replacements: ReplacementNode[] = []
       let lastIndex = 0
       while ((match = linkRegex.exec(value))) {
         const start = match.index ?? 0
