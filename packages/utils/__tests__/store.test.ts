@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach } from 'bun:test'
 // Reset store state before each test
 beforeEach(() => {
   useGameStore.setState({ gameData: {} })
+  useGameStore.getState().init({})
 })
 
 describe('useGameStore', () => {
@@ -18,5 +19,16 @@ describe('useGameStore', () => {
 
     useGameStore.getState().reset()
     expect(useGameStore.getState().gameData).toEqual({})
+  })
+
+  it('initializes and resets to the provided state', () => {
+    useGameStore.getState().init({ health: 10 })
+    expect(useGameStore.getState().gameData).toEqual({ health: 10 })
+
+    useGameStore.getState().setGameData({ mana: 5 })
+    expect(useGameStore.getState().gameData).toEqual({ health: 10, mana: 5 })
+
+    useGameStore.getState().reset()
+    expect(useGameStore.getState().gameData).toEqual({ health: 10 })
   })
 })
