@@ -1,41 +1,63 @@
-import { visit } from "unist-util-visit";
+import { visit } from 'unist-util-visit'
 
 export default function remarkSpinster() {
-  // Matches <script>...</script> tags and captures their contents, including whitespace and attributes.
-  const scriptRegex = /\s*<script\b[^>]*>([\s\S]*?)<\/script>\s*/i;
+  // Matches Harlowe style links [[...]]
+  const linkRegex = /\[\[([^\]]+?)\]\]/g
+
+  function parseLink(raw: string) {
+    const right = raw.indexOf('->')
+    const left = raw.indexOf('<-')
+    if (right !== -1) {
+      return {
+        text: raw.slice(0, right).trim(),
+        target: raw.slice(right + 2).trim()
+      }
+    }
+    if (left !== -1) {
+      return {
+        text: raw.slice(left + 2).trim(),
+        target: raw.slice(0, left).trim()
+      }
+    }
+    const trimmed = raw.trim()
+    return { text: trimmed, target: trimmed }
+  }
 
   return (tree: any) => {
-    const toRemove: { parent: any; index: number }[] = [];
-
-    visit(
-      tree,
-      "paragraph",
-      (node: any, index: number | undefined, parent: any) => {
-        if (!Array.isArray(node.children)) return;
-
-        const joined = node.children
-          .map((c: any) => (typeof c.value === "string" ? c.value : ""))
-          .join("");
-
-        const match = joined.match(scriptRegex);
-        if (match) {
-          try {
-            eval(match[1]);
-          } catch {
-            // ignore script errors
-          }
-          const cleaned = joined.replace(scriptRegex, "");
-          if (cleaned.trim() === "" && parent && typeof index === "number") {
-            toRemove.push({ parent, index });
-          } else {
-            node.children = [{ type: "text", value: cleaned }];
-          }
+    visit(tree, 'text', (node: any, i: number | undefined, parent: any) => {
+      if (
+        typeof node.value !== 'string' ||
+        !parent ||
+        !Array.isArray(parent.children)
+      )
+        return
+      const value: string = node.value
+      let match
+      linkRegex.lastIndex = 0
+      const replacements: any[] = []
+      let lastIndex = 0
+      while ((match = linkRegex.exec(value))) {
+        const start = match.index ?? 0
+        if (start > lastIndex) {
+          replacements.push({
+            type: 'text',
+            value: value.slice(lastIndex, start)
+          })
         }
-      },
-    );
-
-    for (const { parent, index } of toRemove.slice().reverse()) {
-      parent.children.splice(index, 1);
-    }
-  };
+        const { text, target } = parseLink(match[1])
+        replacements.push({
+          type: 'link',
+          url: `#${encodeURIComponent(target)}`,
+          children: [{ type: 'text', value: text }]
+        })
+        lastIndex = start + match[0].length
+      }
+      if (replacements.length) {
+        if (lastIndex < value.length) {
+          replacements.push({ type: 'text', value: value.slice(lastIndex) })
+        }
+        parent.children.splice(i as number, 1, ...replacements)
+      }
+    })
+  }
 }
