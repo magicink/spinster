@@ -12,25 +12,29 @@ export interface GameState<T = Record<string, unknown>> {
   reset: () => void
 }
 
-export const useGameStore = create<GameState<Record<string, unknown>>>(set => {
-  let initialGameData: Record<string, unknown> = {}
+interface InternalState<T> extends GameState<T> {
+  /** Internal storage for the initial state */
+  _initialGameData: T
+}
 
-  return {
-    gameData: initialGameData,
+export const useGameStore = create<InternalState<Record<string, unknown>>>(
+  set => ({
+    gameData: {},
+    _initialGameData: {},
     init: data =>
-      set(() => {
-        initialGameData = { ...data }
-        return { gameData: { ...initialGameData } }
-      }),
+      set(() => ({
+        gameData: { ...data },
+        _initialGameData: { ...data }
+      })),
     setGameData: data =>
       set(
-        produce((state: GameState<Record<string, unknown>>) => {
+        produce((state: InternalState<Record<string, unknown>>) => {
           state.gameData = { ...state.gameData, ...data }
         })
       ),
     reset: () =>
-      set(() => ({
-        gameData: { ...initialGameData }
+      set(state => ({
+        gameData: { ...state._initialGameData }
       }))
-  }
-})
+  })
+)
