@@ -1,7 +1,9 @@
 import { visit } from "unist-util-visit";
 
 export default function remarkSpinster() {
-  const scriptRegex = /\s*<script\b[^>]*>([\s\S]*?)<\/script>\s*/i;
+  // Matches <script> tags and their contents, including any attributes and inner text.
+  // The pattern captures the content inside the <script>...</script> tags for further processing.
+  const SCRIPT_TAG_PATTERN = /\s*<script\b[^>]*>([\s\S]*?)<\/script>\s*/i;
 
   return (tree: any) => {
     const toRemove: { parent: any; index: number }[] = [];
