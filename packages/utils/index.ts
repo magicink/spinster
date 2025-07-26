@@ -1,6 +1,8 @@
 import { visit } from "unist-util-visit";
 
 export default function remarkSpinster() {
+  const scriptRegex = /\s*<script\b[^>]*>([\s\S]*?)<\/script>\s*/i;
+
   return (tree: any) => {
     const toRemove: { parent: any; index: number }[] = [];
 
@@ -11,7 +13,6 @@ export default function remarkSpinster() {
         .map((c: any) => (typeof c.value === "string" ? c.value : ""))
         .join("");
 
-      const scriptRegex = /\s*<script\b[^>]*>([\s\S]*?)<\/script>\s*/i;
       const match = joined.match(scriptRegex);
       if (match) {
         try {
@@ -28,7 +29,7 @@ export default function remarkSpinster() {
       }
     });
 
-    for (const { parent, index } of toRemove.reverse()) {
+    for (const { parent, index } of toRemove.slice().reverse()) {
       parent.children.splice(index, 1);
     }
   };
