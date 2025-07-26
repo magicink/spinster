@@ -16,44 +16,30 @@ describe("remarkSpinster", () => {
 
   it("evaluates and removes script tags", async () => {
     (globalThis as any).scriptExecuted = false;
-    const tree: any = {
-      type: "root",
-      children: [
-        {
-          type: "p",
-          value: "<script>globalThis.scriptExecuted = true;</script>Hello",
-        },
-      ],
-    };
-    const transformer = remarkSpinster();
-    transformer(tree);
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkSpinster)
+      .use(remarkStringify);
+    const md = "Hello <script>globalThis.scriptExecuted = true;</script>";
+    const result = await processor.process(md);
     expect((globalThis as any).scriptExecuted).toBe(true);
-    expect(tree.children[0].value).toBe("Hello");
+    expect(result.toString()).toBe("Hello\n");
     delete (globalThis as any).scriptExecuted;
   });
 
-  it("handles multiple script tags without skipping", () => {
+  it("handles multiple script tags without skipping", async () => {
     (globalThis as any).s1 = false;
     (globalThis as any).s2 = false;
-    const tree: any = {
-      type: "root",
-      children: [
-        {
-          type: "p",
-          value: "<script>globalThis.s1 = true;</script>Hello",
-        },
-        {
-          type: "p",
-          value: "<script>globalThis.s2 = true;</script>World",
-        },
-      ],
-    };
-    const transformer = remarkSpinster();
-    transformer(tree);
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkSpinster)
+      .use(remarkStringify);
+    const md =
+      "Hello <script>globalThis.s1 = true;</script>\n\nWorld <script>globalThis.s2 = true;</script>";
+    const result = await processor.process(md);
     expect((globalThis as any).s1).toBe(true);
     expect((globalThis as any).s2).toBe(true);
-    expect(tree.children[0].value).toBe("Hello");
-    expect(tree.children[1].value).toBe("World");
+    expect(result.toString()).toBe("Hello\n\nWorld\n");
     delete (globalThis as any).s1;
     delete (globalThis as any).s2;
   });
