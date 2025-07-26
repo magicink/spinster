@@ -24,11 +24,12 @@ export default function remarkSpinster() {
   }
 
   return (tree: any) => {
-    visit(tree, 'text', (node: any, i: number | undefined, parent: any) => {
+    visit(tree, 'text', (node: any, index: number | undefined, parent: any) => {
       if (
         typeof node.value !== 'string' ||
         !parent ||
-        !Array.isArray(parent.children)
+        !Array.isArray(parent.children) ||
+        typeof index !== 'number'
       )
         return
       const value: string = node.value
@@ -56,7 +57,7 @@ export default function remarkSpinster() {
         if (lastIndex < value.length) {
           replacements.push({ type: 'text', value: value.slice(lastIndex) })
         }
-        parent.children.splice(i as number, 1, ...replacements)
+        parent.children.splice(index, 1, ...replacements)
       }
     })
   }
