@@ -1,49 +1,29 @@
 import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
+import { produce } from 'immer'
 
 export interface GameState {
-  /** Current passage or scene */
-  scene: string
-  /** Player score */
-  score: number
-  /** Items collected by the player */
-  inventory: string[]
-  setScene: (scene: string) => void
-  incrementScore: (amount?: number) => void
-  addItem: (item: string) => void
-  removeItem: (item: string) => void
+  /** Arbitrary game state */
+  gameData: Record<string, any>
+  /** Merge partial data into existing gameData */
+  setGameData: (data: Record<string, any>) => void
+  /** Reset gameData to an empty object */
   reset: () => void
 }
 
-const initialState = {
-  scene: '',
-  score: 0,
-  inventory: [] as string[]
+const initialState: Pick<GameState, 'gameData'> = {
+  gameData: {}
 }
 
-export const useGameStore = create<GameState>()(
-  immer(set => ({
-    ...initialState,
-    setScene: scene =>
-      set(state => {
-        state.scene = scene
-      }),
-    incrementScore: (amount = 1) =>
-      set(state => {
-        state.score += amount
-      }),
-    addItem: item =>
-      set(state => {
-        if (!state.inventory.includes(item)) state.inventory.push(item)
-      }),
-    removeItem: item =>
-      set(state => {
-        const index = state.inventory.indexOf(item)
-        if (index !== -1) state.inventory.splice(index, 1)
-      }),
-    reset: () =>
-      set(() => ({
-        ...initialState
-      }))
-  }))
-)
+export const useGameStore = create<GameState>(set => ({
+  ...initialState,
+  setGameData: data =>
+    set(
+      produce((state: GameState) => {
+        state.gameData = { ...state.gameData, ...data }
+      })
+    ),
+  reset: () =>
+    set(() => ({
+      gameData: {}
+    }))
+}))

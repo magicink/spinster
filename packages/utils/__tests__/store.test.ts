@@ -3,31 +3,20 @@ import { useGameStore } from '../store'
 
 // Reset store state before each test
 beforeEach(() => {
-  useGameStore.setState({ scene: '', score: 0, inventory: [] })
+  useGameStore.setState({ gameData: {} })
 })
 
 describe('useGameStore', () => {
-  it('handles scene, inventory and score updates', () => {
-    expect(useGameStore.getState().scene).toBe('')
-    expect(useGameStore.getState().score).toBe(0)
-    expect(useGameStore.getState().inventory).toHaveLength(0)
+  it('merges partial game data and resets state', () => {
+    expect(useGameStore.getState().gameData).toEqual({})
 
-    useGameStore.getState().setScene('intro')
-    expect(useGameStore.getState().scene).toBe('intro')
+    useGameStore.getState().setGameData({ health: 100 })
+    expect(useGameStore.getState().gameData).toEqual({ health: 100 })
 
-    useGameStore.getState().incrementScore()
-    useGameStore.getState().incrementScore(4)
-    expect(useGameStore.getState().score).toBe(5)
-
-    useGameStore.getState().addItem('key')
-    expect(useGameStore.getState().inventory).toContain('key')
-
-    useGameStore.getState().removeItem('key')
-    expect(useGameStore.getState().inventory).toHaveLength(0)
+    useGameStore.getState().setGameData({ mana: 50 })
+    expect(useGameStore.getState().gameData).toEqual({ health: 100, mana: 50 })
 
     useGameStore.getState().reset()
-    expect(useGameStore.getState().scene).toBe('')
-    expect(useGameStore.getState().score).toBe(0)
-    expect(useGameStore.getState().inventory).toHaveLength(0)
+    expect(useGameStore.getState().gameData).toEqual({})
   })
 })
